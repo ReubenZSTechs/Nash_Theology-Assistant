@@ -1,58 +1,219 @@
-version: "3.9"
-
 services:
 
+  # Model Servers
+  llm:
+    image: vllm/vllm-openai:v0.26.0
+    container_name: llm-server
+    runtime: nvidia
+    volumes:
+      - ./models:/models
+    ports:
+      - "15000:15000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_OFFLINE=1
+      - VLLM_LOGGING_LEVEL=INFO
+      - VLLM_ATTENTION_BACKEND=FLASH_ATTN
+    command: >
+      /models/models--nvidia--Llama-3.1-8B-Instruct-NVFP4
+      --served_model_name llm
+      --quantization modelopt_fp4
+      --hf_overrides '{"tie_word_embeddings": false}'
+      --max_model_len 32768
+      --gpu_memory_utilization 0.7
+      --kv_cache_dtype turboquant_4bit_nc
+      --port 15000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    depends_on:
+      embedding:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15000/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 1800s
+    restart: unless-stopped
+
+
+  embedding:
+    image: vllm/vllm-openai:v0.26.0
+    container_name: embedding-server
+    runtime: nvidia
+    volumes:
+      - ./models:/models
+    ports:
+      - "15001:15001"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_OFFLINE=1
+      - VLLM_LOGGING_LEVEL=INFO
+      - VLLM_ATTENTION_BACKEND=FLASH_ATTN
+    command: >
+      /models/models--BAAI--bge-m3
+      --served_model_name embedding
+      --max_model_len 8192
+      --gpu_memory_utilization 0.15
+      --port 15001
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15001/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    restart: unless-stopped
+
+
+  # Data Storage
+  postgres:
+    image: postgres:17
+    container_name: vector_storage
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5332:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: admin_storage
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5000:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5.26-community
+    container_name: neo4j-server
+    ports:
+      - "7474:7474"  # HTTP browser
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD}
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_server_memory_heap_initial__size=8G
+      - NEO4J_server_memory_heap_max__size=8G
+      - NEO4J_server_memory_pagecache_size=8G
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    healthcheck:
+      test: ["CMD-SHELL", "wget -O /dev/null -q http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+
+  # Application
   backend:
     build:
       context: .
       dockerfile: deployment/docker/backend.Dockerfile
+    container_name: backend-server
     ports:
       - "8000:8000"
-    volumes:
-      - ./logs:/app/logs
-      - ./outputs:/app/outputs
     environment:
-      - PYTHONPATH=/app
+      - LLM_URL=http://llm:15000/v1
+      - EMBEDDING_URL=http://embedding:15001/v1
+      - SERVED_MODELS=Llama-3.1-8B-Instruct-NVFP4
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      - DATABASE_URL=postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - NEO4J_USERNAME=${NEO4J_USERNAME}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - NEO4J_URI_HOST=bolt://neo4j:7687
+    depends_on:
+      llm:
+        condition: service_healthy
+      embedding:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   frontend:
     build:
       context: .
       dockerfile: deployment/docker/frontend.Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    container_name: frontend-server
     ports:
-      - "8501:8501"
+      - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "-q", "http://localhost:80"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./deployment/nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - backend
-      - frontend
 
-  ollama:
-    image: ollama/ollama
-    ports:
-      - "11434:11434"
+networks:
+  default:
+    name: calvin-gpt-net
+    external: true
 
-  qdrant:
-    image: qdrant/qdrant
-    ports:
-      - "6333:6333"
 
-  neo4j:
-    image: neo4j:latest
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    environment:
-      - NEO4J_AUTH=neo4j/password
-
-  ngrok:
-    image: ngrok/ngrok
-    command: http nginx:80
-    depends_on:
-      - nginx
+volumes:
+  pgdata:
+    name: calvin-gpt-pgdata
+    external: true
+  pgadmin_data:
+    name: calvin-gpt-pgadmin-data
+    external: true
+  neo4j_data:
+    name: calvin-gpt-neo4j-data
+    external: true
+  neo4j_logs:
+    name: calvin-gpt-neo4j-logs
+    external: true
+  neo4j_import:
+    name: calvin-gpt-neo4j-import
+    external: true
+  neo4j_plugins:
+    name: calvin-gpt-neo4j-plugins
+    external: true
