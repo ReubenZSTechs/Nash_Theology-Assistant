@@ -1,13 +1,27 @@
-FROM python:3.11-slim
+FROM node:20-slim AS build
 
 WORKDIR /app
 
-COPY frontend/requirements.txt .
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
 
-RUN pip install --no-cache-dir -r requirements.txt
+COPY frontend/ .
 
-COPY frontend/ ./frontend
+ARG VITE_API_BASE_URL=http://localhost:8000
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
-WORKDIR /app/frontend
+RUN npm run build
 
-CMD ["streamlit", "run", "streamlit_app/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
+
+FROM nginx:1.27-alpine AS runtime
+
+COPY deployment/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+HEALTHCHECK --interval=15s --timeout=5s --retries=5 --start-period=10s \
+  CMD wget -O /dev/null -q http://localhost:80 || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
