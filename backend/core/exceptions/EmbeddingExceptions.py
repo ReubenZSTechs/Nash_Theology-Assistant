@@ -1,0 +1,2 @@
+class EmbeddingServiceError(RuntimeError):
+    pass
