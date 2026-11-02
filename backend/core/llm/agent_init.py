@@ -174,14 +174,15 @@ class LLMAgent:
         return response_format
 
 
-    def build_request_kwargs(self, msg_payload: dict, extra_args: dict) -> dict[str, Union[str, dict]]:
+    def build_request_kwargs(self, msg_payload: dict, extra_args: dict, structured: bool = True) -> dict[str, Union[str, dict]]:
         request_input = {
             "model": self.agent_model,
             "messages": msg_payload,
         }
 
-        response_input = self.format_response_format()
-        request_input['response_format'] = response_input
+        if structured:
+            response_input = self.format_response_format()
+            request_input['response_format'] = response_input
 
         generation_input = self.format_generation_payload(extra_args)
 
@@ -295,7 +296,7 @@ class LLMAgent:
     @log_stream_call
     def generate_llm_answer(self, user_prompt: str, extra_args: Optional[dict]=None):
         msg_payload = self.format_msg_payload(user_prompt)
-        request_kwargs = self.build_request_kwargs(msg_payload, extra_args)
+        request_kwargs = self.build_request_kwargs(msg_payload, extra_args, structured=False)
 
         request_kwargs['stream'] = True
         request_kwargs['stream_options'] = {'include_usage': True}
