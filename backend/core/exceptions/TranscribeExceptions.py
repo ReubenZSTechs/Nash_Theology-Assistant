@@ -1,0 +1,2 @@
+class EmptyWindow(RuntimeError):
+    pass

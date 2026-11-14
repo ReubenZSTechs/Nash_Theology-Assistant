@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATA_ROOT = Path(os.environ.get("NASH_DATA_ROOT", "data"))
+DATA_ROOT = Path(os.environ.get("NASH_DATA_ROOT", "database"))
 PUBLIC_RAW = DATA_ROOT / "public" / "raw"
 PRIVATE_RAW = DATA_ROOT / "private" / "raw"
 PUBLIC_PROCESSED = DATA_ROOT / "public" / "processed"
