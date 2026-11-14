@@ -1,0 +1,2 @@
+class ServerUnavailable(RuntimeError):
+    pass

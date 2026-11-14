@@ -1,0 +1,47 @@
+services:
+  transcribe:
+    image: vllm/vllm-openai:v0.26.0
+    container_name: transcribe-server
+    runtime: nvidia
+    volumes:
+      - ../../models:/models
+    ports:
+      - "15002:15002"
+    environment:
+      - HF_HUB_OFFLINE=1
+      - VLLM_LOGGING_LEVEL=INFO
+      - VLLM_MAX_AUDIO_CLIP_FILESIZE_MB=64
+      - VLLM_MAX_AUDIO_DECODE_DURATION_S=660
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        python3 -c "import av, soundfile, soxr, scipy" 2>/dev/null || uv pip install --system av soundfile soxr scipy
+        WHISPER_PY=$$(python3 -c "import importlib.util, os; print(os.path.join(os.path.dirname(importlib.util.find_spec('vllm').origin), 'model_executor', 'models', 'whisper.py'))")
+        if grep -q '<|prev|>' "$$WHISPER_PY"; then
+          sed -i 's/<|prev|>/<|startofprev|>/' "$$WHISPER_PY"
+          echo "[nash] patched Whisper prompt token in $$WHISPER_PY"
+        fi
+        exec vllm serve /models/models--openai--${TRANSCRIBE_MODEL:-whisper-large-v3-turbo} \
+          --served_model_name ${TRANSCRIBE_MODEL:-whisper-large-v3-turbo} \
+          --gpu_memory_utilization ${TRANSCRIBE_GPU_FRACTION:-0.3} \
+          --port 15002
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    restart: "no"
+
+
+networks:
+  default:
+    name: nash-net
+    external: true

@@ -1,0 +1,41 @@
+name: nash-translate
+
+services:
+
+  translate:
+    image: vllm/vllm-openai:v0.26.0
+    container_name: translate-server
+    runtime: nvidia
+    volumes:
+      - ../../models:/models
+    ports:
+      - "15003:15003"
+    environment:
+      - HF_HUB_OFFLINE=1
+      - VLLM_LOGGING_LEVEL=INFO
+    command: >
+      /models/models--Qwen--${TRANSLATE_MODEL:-Qwen2.5-14B-Instruct-AWQ}
+      --served_model_name translate
+      --max_model_len ${TRANSLATE_MAX_MODEL_LEN:-8192}
+      --gpu_memory_utilization ${TRANSLATE_GPU_FRACTION:-0.8}
+      --port 15003
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15003/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 1800s
+    restart: "no"
+
+
+networks:
+  default:
+    name: nash-net
+    external: true

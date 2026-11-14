@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import os
+
 from pathlib import Path
 from openai import OpenAI
 from typing import Optional, Union
@@ -21,13 +23,18 @@ logger = logging.getLogger(__name__)
 CONFIG = {
     "MODEL_BRIDGE": {
         'llm': {
-            'URL': "https://localhost:15000/v1",
+            'URL': os.getenv("LLM_URL", "https://localhost:15000/v1"),
             'SERVED_MODEL_NAME': "llm"
         },
 
         'embedding': {
-            'URL': "https://localhost:15001/v1",
+            'URL': os.getenv("EMBEDDING_URL", "https://localhost:15001/v1"),
             'SERVED_MODEl_NAME': "embedding"
+        },
+        
+        'translate': {
+            'URL': os.getenv("TRANSLATE_URL", "http://localhost:15003/v1"),
+            'SERVED_MODEL_NAME': "translate"
         }
     },
     "DEFAULT_SETTINGS": {
