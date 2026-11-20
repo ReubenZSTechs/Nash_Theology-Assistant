@@ -1,5 +1,56 @@
-/.DS_Store
-/models/
-.vscode/
+# Secrets
 .env
-/database/
+.env.*
+!.env.example
+*.pem
+*.key
+cookies.txt
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Frontend
+node_modules/
+dist/
+.vite/
+
+# Model weights
+models/
+
+# Private and intermediate data (TB Bible, OPC PDFs, sermon audio, transcripts, checkpoints)
+database/private/
+database/interim/
+
+# Public raw downloads (re-created by the crawler)
+database/public/raw/
+
+# Downloads, temporary files, logs and backups
+*.part
+*.ytdl
+*.tmp
+*.log
+logs/
+*.dump
+*.tgz
+
+# Runtime metrics written by backend/core/observability
+backend/core/logging/*.jsonl

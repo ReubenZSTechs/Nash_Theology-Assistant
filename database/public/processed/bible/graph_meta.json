@@ -1,0 +1,25 @@
+{
+  "built_at": "2026-11-14T07:06:42+00:00",
+  "relation": "CROSS_REFERENCE_TO",
+  "max_range_verses": 0,
+  "verses": 31086,
+  "direct_links": 226770,
+  "via_range_links": 0,
+  "triples": 453540,
+  "skipped_source_rows": {
+    "range_excluded": 88150,
+    "unknown_head": 1
+  },
+  "connected_verses": 29886,
+  "median_degree": 12,
+  "max_degree": 159,
+  "sources": {
+    "bible": "Berean Standard Bible (public domain)",
+    "cross_references": "OpenBible.info (CC-BY)"
+  },
+  "tb_overlay": {
+    "parsed": 31102,
+    "tb_only": 16,
+    "missing": 0
+  }
+}
