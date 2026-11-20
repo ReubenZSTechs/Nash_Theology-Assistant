@@ -1,0 +1,35 @@
+# LLM-as-reranker: the existing LLM server (vLLM, served name "llm") scores how relevant
+# each retrieved passage is to the question. Used by backend/services/rerank_service.py.
+#
+# How a score is computed:
+#   1. The LLM must answer with ONE digit 0-3 (vLLM structured output `choice` forces this).
+#   2. We read the probabilities of the four digits from the token logprobs.
+#   3. score = (0*p0 + 1*p1 + 2*p2 + 3*p3) / 3   -> a number between 0 and 1.
+
+agent:
+  role: reranker
+  model_type: llm
+
+system_prompt: |
+  You are a search relevance judge for a Reformed theology library (Bible verses, sermons, Westminster Standards).
+  Passages may be in English or Indonesian. Rate how useful the passage is for answering the question:
+  0 = unrelated
+  1 = same general topic, but does not help answer
+  2 = partly answers or gives useful supporting material
+  3 = directly answers the question
+  Reply with a single digit: 0, 1, 2 or 3.
+
+user_prompt: |
+  Question: {query}
+
+  Passage:
+  {passage}
+
+generation:
+  temperature: 0.0
+  max_tokens: 1          # we only need the first token (the digit)
+  top_logprobs: 10       # enough to see all four digits
+  timeout: 30
+  max_retries: 1
+  max_workers: 16        # parallel requests; vLLM batches them on the GPU
+  max_passage_chars: 1500

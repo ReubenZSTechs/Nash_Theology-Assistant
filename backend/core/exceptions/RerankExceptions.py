@@ -1,0 +1,2 @@
+class RerankServiceError(RuntimeError):
+    pass

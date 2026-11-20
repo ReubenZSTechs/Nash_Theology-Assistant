@@ -28,7 +28,7 @@ def write_record(filename: str, payload: Dict[str, Any]):
     record_file = CONFIG["DEFAULT_LOG_DIR"] / filename
 
     try:
-        record_file.parent.mkdir(parent=True, exist_ok=True)
+        record_file.parent.mkdir(parents=True, exist_ok=True)
         line = json.dumps(payload, ensure_ascii=False, default=str) + "\n"
 
         with write_lock:

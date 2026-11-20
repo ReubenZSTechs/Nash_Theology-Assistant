@@ -24,6 +24,11 @@ langchain-community
 langchain-huggingface
 langchain-chroma
 # faiss-cpu
+langgraph
+neo4j
+psycopg[binary]
+pgvector
+openai
 
 # =========================================================
 # DATA PROCESSING

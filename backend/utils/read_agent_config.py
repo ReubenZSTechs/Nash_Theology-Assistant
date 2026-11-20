@@ -34,6 +34,6 @@ def read_config(config: Union[str, Path]) -> dict:
     # Validate missing keys:
     missing = [field for field in REQUIRED_KEYS if field not in agent_config]
     if missing:
-        raise KeyError(f"{agent_path} is missing required key(s): {" ".join(missing)}")
+        raise KeyError(f"{agent_path} is missing required key(s): {' '.join(missing)}")
 
     return agent_config
