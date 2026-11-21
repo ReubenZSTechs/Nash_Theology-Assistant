@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ComparativeTheologianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "tradition_positions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "tradition": {
+            "type": "string",
+            "enum": [
+              "reformed", "roman_catholic", "eastern_orthodox", "lutheran", "anglican",
+              "arminian_wesleyan", "baptist", "pentecostal_charismatic", "dispensational", "other"
+            ]
+          },
+          "position": { "type": "string" },
+          "key_texts": {
+            "type": "array",
+            "maxItems": 4,
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["tradition", "position", "key_texts"],
+        "additionalProperties": false
+      }
+    },
+    "points_of_agreement": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "points_of_divergence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "reformed_assessment": { "type": "string" },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "tradition_positions", "points_of_agreement", "points_of_divergence", "scripture_references", "confessional_references", "reformed_assessment", "answer", "confidence"],
+  "additionalProperties": false
+}

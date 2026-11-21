@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorldReligionsScholarResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "religion": {
+      "type": "string",
+      "enum": [
+        "judaism", "islam", "hinduism", "buddhism", "sikhism", "folk_religion", "secularism_and_atheism",
+        "new_age_spirituality", "multiple", "other"
+      ]
+    },
+    "their_teaching": { "type": "string" },
+    "points_of_contact": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "key_differences": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "topic": { "type": "string" },
+          "their_view": { "type": "string" },
+          "christian_view": { "type": "string" }
+        },
+        "required": ["topic", "their_view", "christian_view"],
+        "additionalProperties": false
+      }
+    },
+    "gospel_bridge": { "type": "string" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "religion", "their_teaching", "points_of_contact", "key_differences",
+    "gospel_bridge", "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

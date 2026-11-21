@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HermeneuticsSpecialistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "passage_or_issue": { "type": "string" },
+    "genre": {
+      "type": "string",
+      "enum": [
+        "narrative", "law", "poetry", "wisdom", "prophecy", "gospel", "epistle", "apocalyptic",
+        "mixed", "not_applicable"
+      ]
+    },
+    "principles_applied": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "principle": { "type": "string" },
+          "application": { "type": "string" }
+        },
+        "required": ["principle", "application"],
+        "additionalProperties": false
+      }
+    },
+    "interpretive_options": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "properties": {
+          "interpretation": { "type": "string" },
+          "assessment": { "type": "string" }
+        },
+        "required": ["interpretation", "assessment"],
+        "additionalProperties": false
+      }
+    },
+    "harmonization": { "type": "string" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "passage_or_issue", "genre", "principles_applied", "interpretive_options",
+    "harmonization", "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BiblicalTheologianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "covenant_context": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "string",
+        "enum": [
+          "covenant_of_redemption", "covenant_of_works", "covenant_of_grace",
+          "noahic", "abrahamic", "mosaic", "davidic", "new_covenant"
+        ]
+      }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "canonical_trajectory": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": { "type": "string" },
+          "reference": { "type": "string" },
+          "development": { "type": "string" }
+        },
+        "required": ["stage", "reference", "development"],
+        "additionalProperties": false
+      }
+    },
+    "christological_fulfillment": { "type": "string" },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "covenant_context", "scripture_references", "canonical_trajectory", "christological_fulfillment", "answer", "confidence"],
+  "additionalProperties": false
+}

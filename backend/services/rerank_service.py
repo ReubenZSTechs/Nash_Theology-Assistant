@@ -11,27 +11,25 @@ digit, and the token logprobs tell us how sure the LLM is about each digit:
 Using the probabilities (not just the chosen digit) gives smooth scores, so two passages
 that are both rated "2" can still be ordered.
 
-The prompt and generation settings live in backend/configs/agent/reranker.yaml.
+The prompt and generation settings live in backend/configs/agent/main/reranker.yaml
+and are loaded through LLMAgent (backend/core/llm/agent_init.py).
 """
 import logging
 import math
-import os
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv
-from openai import APIConnectionError, APIStatusError, OpenAI
+from openai import APIConnectionError
 
+from backend.core.exceptions.AgentExceptions import AgentCallError
 from backend.core.exceptions.RerankExceptions import RerankServiceError
-from backend.utils.read_agent_config import read_config
-
-load_dotenv()
+from backend.core.llm.agent_init import LLMAgent
 
 logger = logging.getLogger(__name__)
 
-RERANKER_CONFIG = Path(__file__).resolve().parents[1] / "configs" / "agent" / "reranker.yaml"
+RERANKER_CONFIG = Path(__file__).resolve().parents[1] / "configs" / "agent" / "main" / "reranker.yaml"
 RATINGS = ("0", "1", "2", "3")
 MAX_RATING = 3
 
@@ -64,58 +62,45 @@ def shorten(text: str, limit: int) -> str:
 
 class RerankService:
     def __init__(self, config_path: Path = RERANKER_CONFIG):
-        config = read_config(config_path)
-        if not config:
-            raise RerankServiceError(f"Reranker config not found or empty: {config_path}")
+        try:
+            self.agent = LLMAgent(agent_config=config_path)
+        except (KeyError, ValueError) as error:
+            raise RerankServiceError(f"Could not initialise reranker agent from {config_path}: {error}") from error
 
-        self.system_prompt = config["system_prompt"]
-        self.user_prompt = config["user_prompt"]
-        self.generation = config["generation"]
-
-        self.base_url = os.getenv("LLM_URL", "http://localhost:15000/v1")
-        self.model = os.getenv("LLM_MODEL", "llm")
-        self.client = OpenAI(
-            base_url=self.base_url,
-            api_key=os.getenv("VLLM_API_KEY") or "not-needed",
-            timeout=self.generation.get("timeout", 30),
-            max_retries=self.generation.get("max_retries", 1),
-        )
+        # Merged generation settings (agent defaults + reranker.yaml); also holds the
+        # reranker-only keys such as top_logprobs, max_workers and max_passage_chars.
+        self.generation = self.agent.agent_generation_config
 
 
     def check_server(self) -> None:
         try:
-            served = [model.id for model in self.client.models.list().data]
+            served = [model.id for model in self.agent.client.models.list().data]
         except APIConnectionError as error:
-            raise RerankServiceError(f"LLM server unreachable at {self.base_url}") from error
+            raise RerankServiceError(f"LLM server unreachable at {self.agent.agent_url}") from error
 
-        if self.model not in served:
-            raise RerankServiceError(f"Model '{self.model}' not served at {self.base_url}; found {served}")
+        if self.agent.agent_model not in served:
+            raise RerankServiceError(f"Model '{self.agent.agent_model}' not served at {self.agent.agent_url}; found {served}")
 
 
-    def build_messages(self, query: str, passage: str) -> list[dict]:
+    def build_user_prompt(self, query: str, passage: str) -> str:
         passage = shorten(passage, self.generation.get("max_passage_chars", 1500))
-        return [
-            {"role": "system", "content": self.system_prompt},
-            {"role": "user", "content": self.user_prompt.format(query=query, passage=passage)},
-        ]
+        return f"Question:\n{query}\n\nPassage:\n{passage}"
 
 
     def score(self, query: str, passage: str) -> float:
         """Relevance of one passage to the query, between 0 and 1."""
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=self.build_messages(query, passage),
-                temperature=self.generation.get("temperature", 0.0),
-                max_tokens=self.generation.get("max_tokens", 1),
-                logprobs=True,
-                top_logprobs=self.generation.get("top_logprobs", 10),
-                extra_body={"structured_outputs": {"choice": list(RATINGS)}},
+            response = self.agent.request_completion(
+                self.build_user_prompt(query, passage),
+                extra_args={
+                    "logprobs": True,
+                    "top_logprobs": self.generation.get("top_logprobs", 10),
+                    "extra_body": {"structured_outputs": {"choice": list(RATINGS)}},
+                },
+                structured=False,
             )
-        except APIConnectionError as error:
-            raise RerankServiceError(f"LLM server unreachable at {self.base_url}") from error
-        except APIStatusError as error:
-            raise RerankServiceError(f"Rerank request failed ({error.status_code}): {error.message}") from error
+        except AgentCallError as error:
+            raise RerankServiceError(f"Rerank request failed: {error}") from error
 
         first_token = response.choices[0].logprobs.content[0]
         return expected_relevance(first_token.top_logprobs)

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorshipTheologianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "worship_topic": {
+      "type": "string",
+      "enum": [
+        "regulative_principle", "elements_of_worship", "lords_day", "singing_and_music", "public_prayer",
+        "preaching", "sacraments_in_worship", "private_and_family_worship"
+      ]
+    },
+    "elements_involved": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "circumstances_vs_elements": { "type": "string" },
+    "practical_guidance": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "worship_topic", "elements_involved", "circumstances_vs_elements", "practical_guidance",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

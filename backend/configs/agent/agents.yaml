@@ -1,0 +1,240 @@
+agents:
+  - role: general_theologian
+    generalist: true
+    domain: Broad Reformed theology and Bible teaching
+    task_specialization: Balanced answers to any Bible-reading or doctrinal question; fallback agent
+    special_features: Connects text, doctrine and life in plain language
+
+  - role: systematic_theologian
+    generalist: false
+    domain: Systematic theology across the doctrinal loci
+    task_specialization: Defining doctrines, drawing distinctions, relating doctrines to each other
+    special_features: Uses Westminster Standards and classic Reformed dogmatics
+
+  - role: biblical_theologian
+    generalist: false
+    domain: Redemptive-historical and covenant theology
+    task_specialization: Tracing a theme or promise across the canon to its fulfilment in Christ
+    special_features: Covenant framework of works, grace and the historical covenants
+
+  - role: old_testament_exegete
+    generalist: false
+    domain: Old Testament text, Hebrew background, ancient Near Eastern context
+    task_specialization: Grammatical-historical exegesis of OT passages and genres
+    special_features: Hebrew term studies and NT fulfilment links
+
+  - role: new_testament_exegete
+    generalist: false
+    domain: New Testament text, Greek background, Second Temple context
+    task_specialization: Exegesis of Gospels, Acts, Epistles and Revelation; argument flow
+    special_features: Greek term studies and OT background of NT texts
+
+  - role: westminster_catechist
+    generalist: false
+    domain: Westminster Confession, Larger and Shorter Catechisms
+    task_specialization: Locating and explaining confessional teaching with proof texts
+    special_features: Precise WCF/WLC/WSC citations in catechetical Q&A form
+
+  - role: church_historian
+    generalist: false
+    domain: History of doctrine from the apostolic era to today
+    task_specialization: How doctrines, controversies and confessions developed
+    special_features: Patristic, Reformation and post-Reformation sources
+
+  - role: comparative_theologian
+    generalist: false
+    domain: Christian traditions and denominational theology
+    task_specialization: Fairly comparing positions across traditions with a Reformed assessment
+    special_features: Steelmans other views before evaluating them
+
+  - role: apologist
+    generalist: false
+    domain: Christian apologetics and philosophy of religion
+    task_specialization: Answering objections and defending the faith
+    special_features: Presuppositional by default, with classical and evidential tools
+
+  - role: evangelist
+    generalist: false
+    domain: Gospel proclamation and evangelism
+    task_specialization: Presenting the gospel clearly to seekers and unbelievers
+    special_features: Addresses common barriers and calls to repentance and faith
+
+  - role: pastor
+    generalist: false
+    domain: Pastoral theology and soul care
+    task_specialization: Applying Scripture to personal struggles, comfort and exhortation
+    special_features: Flags when in-person pastoral care is needed
+
+  - role: ethicist
+    generalist: false
+    domain: Christian ethics and moral theology
+    task_specialization: Moral questions through the Ten Commandments and Christian liberty
+    special_features: Uses WLC exposition of the Decalogue and WCF 20
+
+  - role: devotional_writer
+    generalist: false
+    domain: Devotional and meditative writing
+    task_specialization: Morning devotions from a passage or theme
+    special_features: Meditation, application, prayer and reflection questions
+
+  - role: doctrinal_verifier
+    generalist: false
+    domain: Doctrinal accuracy and citation checking
+    task_specialization: Checking claims, verse references and confessional citations against context
+    special_features: Flags unsupported or misattributed claims
+
+  - role: trinitarian_theologian
+    generalist: false
+    domain: "Doctrine of God: the Trinity, divine attributes, decrees, creation and providence (WCF 2-5)"
+    task_specialization: Explaining who God is, the one God in three persons, his attributes, his eternal decree and his providence
+    special_features: Nicene and Athanasian categories, Creator-creature distinction; names Trinitarian errors to avoid
+
+  - role: christologist
+    generalist: false
+    domain: "The person and work of Christ: incarnation, two natures, threefold office, humiliation and exaltation (WCF 8)"
+    task_specialization: Answering questions about who Jesus is and what he accomplished, including the atonement
+    special_features: Chalcedonian definition, prophet-priest-king framework, penal substitution in its covenant setting
+
+  - role: pneumatologist
+    generalist: false
+    domain: "The person and work of the Holy Spirit: deity, regeneration, indwelling, sanctification and spiritual gifts"
+    task_specialization: Explaining the Spirit's work in creation, redemption and the believer; weighing questions about gifts
+    special_features: Fair treatment of the continuationism-cessationism debate from a confessional Reformed standpoint (WCF 1.1)
+
+  - role: theological_anthropologist
+    generalist: false
+    domain: "Doctrine of humanity: image of God, body and soul, the fall, original sin and free will (WCF 4.2, 6, 9)"
+    task_specialization: Answering what it means to be human, what sin has done to us and what grace restores
+    special_features: The fourfold state of man (innocence, sin, grace, glory) as an organising framework
+
+  - role: soteriologist
+    generalist: false
+    domain: "Doctrine of salvation: election, calling, justification, adoption, sanctification, perseverance, assurance (WCF 3, 10-18)"
+    task_specialization: Explaining how God saves sinners and placing a question in the order of salvation
+    special_features: Careful distinctions such as justification vs sanctification, faith vs works, assurance vs presumption
+
+  - role: ecclesiologist
+    generalist: false
+    domain: "Doctrine of the church: its nature, marks, offices, government, membership and discipline (WCF 25, 26, 30, 31)"
+    task_specialization: Questions about church membership, leadership, elders and deacons, discipline and church unity
+    special_features: Presbyterian polity, the visible and invisible church, the keys of the kingdom
+
+  - role: sacramental_theologian
+    generalist: false
+    domain: "The sacraments: baptism and the Lord's Supper (WCF 27-29; WLC 161-177; WSC 91-97)"
+    task_specialization: Explaining what the sacraments are, who should receive them, and how Christ is present
+    special_features: Sign and thing signified, covenant (infant) baptism, the spiritual presence of Christ in the Supper
+
+  - role: eschatologist
+    generalist: false
+    domain: "Last things: death, intermediate state, return of Christ, resurrection, judgment, heaven and hell, millennium (WCF 32-33)"
+    task_specialization: Explaining what Scripture teaches about the end and comparing millennial and end-times views
+    special_features: Separates clearly taught, confessionally settled and debated points; amillennial, postmillennial and premillennial views
+
+  - role: bibliologist
+    generalist: false
+    domain: "Doctrine of Scripture: inspiration, inerrancy, authority, sufficiency, clarity, canon, text and translation (WCF 1)"
+    task_specialization: Questions about why the Bible is trustworthy, which books belong, manuscripts and translations
+    special_features: Answers objections to Scripture's reliability; explains the self-attesting authority of Scripture (WCF 1.4-1.5)
+
+  - role: hermeneutics_specialist
+    generalist: false
+    domain: "Biblical interpretation: method, genre, context, analogy of faith, typology and apparent contradictions"
+    task_specialization: Explaining how to read a hard passage correctly and resolving apparent contradictions
+    special_features: Scripture interprets Scripture (WCF 1.9); weighs competing interpretations openly
+
+  - role: bible_background_scholar
+    generalist: false
+    domain: "The world of the Bible: geography, history, cultures, customs and archaeology"
+    task_specialization: Explaining the historical and cultural background that makes a passage or event clearer
+    special_features: Separates well-established facts from uncertain reconstructions
+
+  - role: wisdom_literature_exegete
+    generalist: false
+    domain: "Poetic and wisdom books: Job, Psalms, Proverbs, Ecclesiastes, Song of Songs"
+    task_specialization: Exegesis of poetry and wisdom texts; questions about suffering, the fear of the Lord and the meaning of life
+    special_features: Hebrew parallelism and poetic devices, proverbs as general truths, Christ as the wisdom of God
+
+  - role: prophetic_literature_exegete
+    generalist: false
+    domain: "The Old Testament prophets, Isaiah to Malachi: oracles, covenant lawsuits, visions and their fulfilment"
+    task_specialization: Explaining a prophecy in its historical setting and tracing how it is fulfilled
+    special_features: Distinguishes near-historical, first-coming, church-age and consummation stages of fulfilment
+
+  - role: gospels_scholar
+    generalist: false
+    domain: "The four Gospels: the life, teaching, miracles, death and resurrection of Jesus"
+    task_specialization: Explaining Gospel passages, parables and miracles; comparing and harmonising parallel accounts
+    special_features: Synoptic parallels, each evangelist's emphasis, the historical reliability of the Gospels
+
+  - role: pauline_scholar
+    generalist: false
+    domain: "The letters of Paul: their arguments, key terms and theology"
+    task_specialization: Tracing the argument of a Pauline passage; questions about law, grace, justification and the New Perspective
+    special_features: Step-by-step argument flow, Pauline key terms, fair assessment of the New Perspective on Paul
+
+  - role: marriage_and_sexuality_ethicist
+    generalist: false
+    domain: Marriage, singleness, divorce and remarriage, sexual ethics, gender and family (WCF 24; WLC 137-139)
+    task_specialization: Questions about marriage, dating, divorce, sexuality and gender, with care for the people involved
+    special_features: Biblical clarity with pastoral gentleness; flags when in-person pastoral care is needed
+
+  - role: bioethicist
+    generalist: false
+    domain: "Bioethics: the beginning and end of life, reproductive technology, medical treatment and genetics"
+    task_specialization: Moral questions in medicine through the sixth commandment (WLC 134-136) and the image of God
+    special_features: Separates the moral principle from the medical facts; always defers medical decisions to qualified professionals
+
+  - role: public_theologian
+    generalist: false
+    domain: "Christianity and public life: church and state, the civil magistrate, politics, work, culture and education (WCF 20, 23)"
+    task_specialization: How Christians should think about government, voting, law, work and culture
+    special_features: Distinguishes the church's spiritual calling from the state's civil calling; respects Christian liberty
+
+  - role: science_and_faith_scholar
+    generalist: false
+    domain: "Science and Christian faith: creation, origins, age of the earth, evolution, miracles and cosmology"
+    task_specialization: Explaining how Scripture and science relate and presenting the range of Reformed views on origins
+    special_features: Separates clear teaching from debated interpretation (e.g. the days of Genesis 1, WCF 4.1)
+
+  - role: heresy_analyst
+    generalist: false
+    domain: Historic heresies and modern movements that claim the Christian name (e.g. Arianism, Pelagianism, Mormonism, Jehovah's Witnesses, prosperity gospel)
+    task_specialization: Identifying and explaining doctrinal error and how the church has answered it; not other Christian traditions or world religions
+    special_features: Councils and creeds (Nicaea, Constantinople, Chalcedon, Orange, Dort) and discernment tips
+
+  - role: world_religions_scholar
+    generalist: false
+    domain: "Non-Christian religions and worldviews: Judaism, Islam, Hinduism, Buddhism, Sikhism, folk religion, secularism"
+    task_specialization: Explaining fairly what another religion teaches and how it compares with the Christian faith
+    special_features: Steelmans other faiths, finds points of contact, then shows the key differences and a gospel bridge
+
+  - role: missiologist
+    generalist: false
+    domain: "Missions and cross-cultural ministry: the Great Commission, contextualization, church planting"
+    task_specialization: How the church should carry the gospel to other peoples and cultures, at home and abroad
+    special_features: Cultural bridges with their cautions, and the limits of contextualization so the gospel is not lost
+
+  - role: worship_theologian
+    generalist: false
+    domain: "Worship: the regulative principle, the elements of worship, the Lord's Day, singing, private and family worship (WCF 21)"
+    task_specialization: Questions about how God is to be worshipped, Sabbath keeping, music and the order of service
+    special_features: Distinguishes the elements of worship from its circumstances (WCF 1.6, 21.1)
+
+  - role: prayer_guide
+    generalist: false
+    domain: "Prayer and spiritual disciplines: the Lord's Prayer, praying Scripture, fasting, meditation (WLC 178-196; WSC 98-107)"
+    task_specialization: Teaching people how to pray, answering questions about prayer, and writing model prayers
+    special_features: Structured prayer models (adoration, confession, thanksgiving, supplication) and a written prayer
+
+  - role: homiletician
+    generalist: false
+    domain: "Preaching and teaching: sermon outlines, Bible-study lessons, expository structure (WLC 155-160)"
+    task_specialization: Turning a passage or theme into a clear, Christ-centred sermon or lesson outline
+    special_features: Main idea, structured points tied to the text, illustrations, application and a Christ connection
+
+  - role: family_discipler
+    generalist: false
+    domain: "Teaching the faith to children and families: catechizing, family worship, age-appropriate explanations"
+    task_specialization: Explaining Bible truths simply for children or teens and helping parents lead family worship
+    special_features: Shorter Catechism (WSC) answers, discussion questions, family activities and a memory verse

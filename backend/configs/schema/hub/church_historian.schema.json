@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChurchHistorianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "periods": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "string",
+        "enum": ["apostolic", "patristic", "medieval", "reformation", "post_reformation", "modern", "contemporary"]
+      }
+    },
+    "historical_figures": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "era": { "type": "string" },
+          "contribution": { "type": "string" }
+        },
+        "required": ["name", "era", "contribution"],
+        "additionalProperties": false
+      }
+    },
+    "key_events": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "event": { "type": "string" },
+          "approximate_date": { "type": "string" },
+          "significance": { "type": "string" }
+        },
+        "required": ["event", "approximate_date", "significance"],
+        "additionalProperties": false
+      }
+    },
+    "scripture_references": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "development_summary": { "type": "string" },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "periods", "historical_figures", "key_events", "scripture_references", "confessional_references", "development_summary", "answer", "confidence"],
+  "additionalProperties": false
+}

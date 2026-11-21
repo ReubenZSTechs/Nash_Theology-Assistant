@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PastorResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "pastoral_tone": {
+      "type": "string",
+      "enum": ["comfort", "encouragement", "instruction", "exhortation", "admonition"]
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "applications": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "prayer": { "type": "string" },
+    "recommend_in_person_care": { "type": "boolean" },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "pastoral_tone", "scripture_references", "confessional_references", "applications", "prayer", "recommend_in_person_care", "answer", "confidence"],
+  "additionalProperties": false
+}

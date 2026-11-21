@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaulineScholarResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "letter": { "type": "string" },
+    "argument_flow": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": { "type": "string" },
+          "summary": { "type": "string" }
+        },
+        "required": ["step", "summary"],
+        "additionalProperties": false
+      }
+    },
+    "key_terms": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": { "type": "string" },
+          "meaning": { "type": "string" }
+        },
+        "required": ["term", "meaning"],
+        "additionalProperties": false
+      }
+    },
+    "perspectives_assessed": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "properties": {
+          "view": { "type": "string" },
+          "assessment": { "type": "string" }
+        },
+        "required": ["view", "assessment"],
+        "additionalProperties": false
+      }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "letter", "argument_flow", "key_terms", "perspectives_assessed", "scripture_references",
+    "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

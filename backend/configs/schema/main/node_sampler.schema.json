@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NodeSampling",
+  "type": "object",
+  "properties": {
+    "selected_agents": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "enum": [
+          "general_theologian", "systematic_theologian", "biblical_theologian", "old_testament_exegete",
+          "new_testament_exegete", "westminster_catechist", "church_historian", "comparative_theologian",
+          "apologist", "evangelist", "pastor", "ethicist", "devotional_writer", "doctrinal_verifier",
+          "trinitarian_theologian", "christologist", "pneumatologist", "theological_anthropologist",
+          "soteriologist", "ecclesiologist", "sacramental_theologian", "eschatologist", "bibliologist",
+          "hermeneutics_specialist", "bible_background_scholar", "wisdom_literature_exegete",
+          "prophetic_literature_exegete", "gospels_scholar", "pauline_scholar", "marriage_and_sexuality_ethicist",
+          "bioethicist", "public_theologian", "science_and_faith_scholar", "heresy_analyst",
+          "world_religions_scholar", "missiologist", "worship_theologian", "prayer_guide", "homiletician",
+          "family_discipler"
+        ]
+      }
+    }
+  },
+  "required": ["selected_agents"],
+  "additionalProperties": false
+}

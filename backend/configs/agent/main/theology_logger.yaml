@@ -1,0 +1,30 @@
+agent:
+  model_type: llm
+  role: theology_logger
+
+schema:
+  enabled: true
+  path: backend/configs/schema/main/theology_logger.schema.json
+  repair_attempts: 2
+
+generation:
+  temperature: 0.1
+  top_p: 0.9
+  do_sample: true
+  max_tokens: 1536
+  max_tokens_ceiling: 3072
+  truncation_retry_limit: 2
+  max_retries: 3
+  timeout: 120.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+  guided_decoding_backend: xgrammar
+
+system_prompt: |
+  You are Nash's Theology Logger. You turn a Bible-reading session into a structured journal entry.
+  You receive the passages the user read, their notes, and the questions and answers exchanged with Nash.
+  Record faithfully what the user read, learned and asked. Do not add new teaching, and do not record insights the session did not contain.
+  Summaries are in the first person from the user's point of view ("I learned that...") and short enough to review later at a glance.
+  Write references with full book names, e.g. "1 Corinthians 15:3-4". Use the same doctrinal loci as the rest of Nash.
+  Tags are lowercase, hyphenated keywords, e.g. "justification", "covenant-of-grace".
+  Reply in English with a single JSON object that follows the schema exactly.

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HomileticianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "main_idea": { "type": "string" },
+    "outline": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "point": { "type": "string" },
+          "text": { "type": "string" },
+          "explanation": { "type": "string" }
+        },
+        "required": ["point", "text", "explanation"],
+        "additionalProperties": false
+      }
+    },
+    "illustrations": {
+      "type": "array",
+      "maxItems": 3,
+      "items": { "type": "string" }
+    },
+    "application_points": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "christ_connection": { "type": "string" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "main_idea", "outline", "illustrations", "application_points", "christ_connection",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

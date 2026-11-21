@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EdgeScoring",
+  "type": "object",
+  "properties": {
+    "scores": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "properties": {
+          "response_id": {
+            "type": "string",
+            "enum": ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13"]
+          },
+          "score": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+        },
+        "required": ["response_id", "score"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["scores"],
+  "additionalProperties": false
+}

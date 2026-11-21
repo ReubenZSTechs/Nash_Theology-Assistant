@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TheologyLogEntry",
+  "type": "object",
+  "properties": {
+    "passages_read": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": { "type": "string" }
+    },
+    "session_summary": { "type": "string" },
+    "doctrines_touched": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "string",
+        "enum": [
+          "prolegomena_and_scripture", "theology_proper", "anthropology_and_sin",
+          "christology", "soteriology", "pneumatology",
+          "ecclesiology_and_sacraments", "eschatology", "covenant_theology"
+        ]
+      }
+    },
+    "key_insights": {
+      "type": "array",
+      "maxItems": 6,
+      "items": { "type": "string" }
+    },
+    "key_verses": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_links": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["passages_read", "session_summary", "doctrines_touched", "key_insights", "key_verses", "confessional_links", "open_questions", "tags"],
+  "additionalProperties": false
+}

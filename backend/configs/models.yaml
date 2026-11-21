@@ -1,0 +1,24 @@
+defaults:
+  main: llama3.1
+  alternative: qwen2.5
+
+models:
+  llama3.1:
+    served_name: llm
+    description: nvidia/Llama-3.1-8B-Instruct-NVFP4
+    agents:
+      prompt_rewriter: backend/configs/agent/main/prompt_rewriter.yaml
+      reranker: backend/configs/agent/main/reranker.yaml
+      theology_pooler: backend/configs/agent/main/theology_logger.yaml
+      node_sampler: backend/configs/agent/main/node_sampler.yaml
+      graph_pooler: backend/configs/agent/main/graph_pooler.yaml
+
+  qwen2.5:
+    served_name: llm
+    description: Qwen/Qwen2.5-14B-Instruct-AWQ
+    agents:
+      prompt_rewriter: backend/configs/agent/main/prompt_rewriter.yaml
+      reranker: backend/configs/agent/main/reranker.yaml
+      theology_pooler: backend/configs/agent/main/theology_logger.yaml
+      node_sampler: backend/configs/agent/main/node_sampler.yaml
+      graph_pooler: backend/configs/agent/main/graph_pooler.yaml

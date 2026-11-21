@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EcclesiologistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "church_topic": {
+      "type": "string",
+      "enum": [
+        "nature_of_church", "marks_of_church", "offices", "government", "membership", "discipline",
+        "unity_and_separation", "mission_of_church"
+      ]
+    },
+    "offices_involved": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string", "enum": ["minister", "ruling_elder", "deacon", "member"] }
+    },
+    "polity_notes": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "practical_steps": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "church_topic", "offices_involved", "polity_notes", "practical_steps",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

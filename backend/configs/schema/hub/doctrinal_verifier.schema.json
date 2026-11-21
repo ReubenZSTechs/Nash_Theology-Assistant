@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DoctrinalVerifierResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "claims_checked": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim": { "type": "string" },
+          "verdict": {
+            "type": "string",
+            "enum": ["supported", "partially_supported", "unsupported", "misattributed"]
+          },
+          "evidence": { "type": "string" },
+          "correction": { "type": "string" }
+        },
+        "required": ["claim", "verdict", "evidence", "correction"],
+        "additionalProperties": false
+      }
+    },
+    "reference_issues": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "issue": { "type": "string" }
+        },
+        "required": ["reference", "issue"],
+        "additionalProperties": false
+      }
+    },
+    "scripture_references": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "claims_checked", "reference_issues", "scripture_references", "confessional_references", "answer", "confidence"],
+  "additionalProperties": false
+}
