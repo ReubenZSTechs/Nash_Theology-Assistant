@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrayerGuideResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "prayer_focus": { "type": "string" },
+    "lords_prayer_petitions": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "enum": ["preface", "first", "second", "third", "fourth", "fifth", "sixth"]
+      }
+    },
+    "prayer_model": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "part": { "type": "string", "enum": ["adoration", "confession", "thanksgiving", "supplication"] },
+          "content": { "type": "string" }
+        },
+        "required": ["part", "content"],
+        "additionalProperties": false
+      }
+    },
+    "written_prayer": { "type": "string" },
+    "practices": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "prayer_focus", "lords_prayer_petitions", "prayer_model", "written_prayer",
+    "practices", "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

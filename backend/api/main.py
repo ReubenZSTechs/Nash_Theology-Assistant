@@ -10,13 +10,17 @@ Every route lives under /api, because nginx forwards /api/... to this server unc
 from fastapi import APIRouter, FastAPI
 
 from backend.configs.tools.retrieval import router as tools_router
+from backend.configs.tools.run_GoA import router as goa_tools_router
+from backend.pipelines.agentic.GoA_pipeline import router as goa_router
 from backend.pipelines.rag.rag_pipeline import router as rag_router
 
 app = FastAPI(title="Nash API")
 
 api = APIRouter(prefix="/api")
 api.include_router(rag_router)      # /api/rag/...
-api.include_router(tools_router)    # /api/tools/...
+api.include_router(goa_router)      # /api/goa/...
+api.include_router(tools_router)    # /api/tools/retrieval...
+api.include_router(goa_tools_router)  # /api/tools/goa...
 
 
 @api.get("/health")

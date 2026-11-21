@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PromptRewrite",
+  "type": "object",
+  "properties": {
+    "rewritten_query": { "type": "string" },
+    "is_follow_up": { "type": "boolean" }
+  },
+  "required": ["rewritten_query", "is_follow_up"],
+  "additionalProperties": false
+}

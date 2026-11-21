@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
+from time import perf_counter
 
 from backend.database.neo4j.get_connection import get_neo4j_driver
 from backend.database.postgres.get_connection import PGConnect
@@ -61,6 +62,7 @@ def retrieve(query: str, vector_top_k: int = DEFAULT_TOP_K, graph_top_k: int = D
 
     Returns a dict with: query, context, sources, vector_results, graph_results, errors.
     """
+    start_time = perf_counter()
     if not isinstance(query, str) or not query.strip():
         raise ValueError("query must be a non-empty string")
     check_top_k("vector_top_k", vector_top_k)
@@ -75,6 +77,10 @@ def retrieve(query: str, vector_top_k: int = DEFAULT_TOP_K, graph_top_k: int = D
         "rerank": rerank,
         "errors": [],
     })
+
+    end_time = perf_counter()
+
+    print(f"Retrieved full context at {end_time - start_time}s latency\n")
 
     return {
         "query": final_state["query"],

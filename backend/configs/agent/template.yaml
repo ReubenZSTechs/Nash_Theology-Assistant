@@ -1,0 +1,36 @@
+agent:
+  model_type: llm-or-embedding
+  role: agent_name
+
+
+schema:
+  enabled: true-or-false
+  path: path_to_schema
+  repair_attempts: 2
+
+
+generation:
+  # How creative the answer is 
+  temperature: 0.2 # Creativity level. Lower = safer, more consistent answers. Higher = more varied, creative answers.
+  top_p: 0.9 # Only pick from the most likely words. 0.9 = ignore the rare, unlikely words.
+  do_sample: true # true = allow some variety in answers. false = always pick the single most likely word.
+
+  # How long the answer can be
+  max_tokens: 2048 # Maximum answer length (roughly 1 token ≈ 3/4 of a word).
+  max_tokens_ceiling: 4096 # The absolute maximum length allowed, even when retrying a cut-off answer.
+  truncation_retry_limit: 2 # If the answer gets cut off, try again with more space, up to this many times.
+
+  # What to do when something fails
+  max_retries: 3 # If the request fails (e.g., server error), try again up to this many times.
+  timeout: 180.0 # Give up if no answer arrives within this many seconds.
+
+  # Avoiding repetition
+  frequency_penalty: 0.3 # Discourages repeating the same words. Higher = less repetition. 0 = off.
+  presence_penalty: 0.2 # Encourages bringing up new words and ideas. Higher = more variety. 0 = off.
+
+  # Output format
+  guided_decoding_backend: xgrammar # Tool that makes the answer follow a required format (e.g., JSON). Only works when a format is given.
+
+
+system_prompt: |
+  System prompt for agent (think of it as personality of the agent)

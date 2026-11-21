@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MissiologistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "mission_context": { "type": "string" },
+    "cultural_bridges": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "bridge": { "type": "string" },
+          "caution": { "type": "string" }
+        },
+        "required": ["bridge", "caution"],
+        "additionalProperties": false
+      }
+    },
+    "contextualization_limits": { "type": "string" },
+    "mission_strategies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "mission_context", "cultural_bridges", "contextualization_limits", "mission_strategies",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PublicTheologianResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "sphere": {
+      "type": "string",
+      "enum": [
+        "civil_government", "law_and_policy", "politics_and_voting", "work_and_vocation", "culture_and_arts",
+        "education", "economics", "religious_liberty"
+      ]
+    },
+    "church_state_distinction": { "type": "string" },
+    "principles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "principle": { "type": "string" },
+          "basis": { "type": "string" }
+        },
+        "required": ["principle", "basis"],
+        "additionalProperties": false
+      }
+    },
+    "christian_liberty_note": { "type": "string" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "sphere", "church_state_distinction", "principles", "christian_liberty_note",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

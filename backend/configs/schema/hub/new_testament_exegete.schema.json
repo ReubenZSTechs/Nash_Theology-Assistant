@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NewTestamentExegeteResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "passage": { "type": "string" },
+    "genre": {
+      "type": "string",
+      "enum": ["gospel", "historical_narrative", "epistle", "apocalyptic"]
+    },
+    "historical_context": { "type": "string" },
+    "argument_flow": { "type": "string" },
+    "key_terms": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "transliteration": { "type": "string" },
+          "gloss": { "type": "string" },
+          "significance": { "type": "string" }
+        },
+        "required": ["transliteration", "gloss", "significance"],
+        "additionalProperties": false
+      }
+    },
+    "old_testament_background": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "connection": { "type": "string" }
+        },
+        "required": ["reference", "connection"],
+        "additionalProperties": false
+      }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": ["reasoning", "passage", "genre", "historical_context", "argument_flow", "key_terms", "old_testament_background", "scripture_references", "answer", "confidence"],
+  "additionalProperties": false
+}

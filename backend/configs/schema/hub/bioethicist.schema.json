@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BioethicistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "bioethical_issue": { "type": "string" },
+    "issue_category": {
+      "type": "string",
+      "enum": [
+        "beginning_of_life", "end_of_life", "reproductive_technology", "medical_treatment",
+        "genetics", "bodily_integrity", "mental_health"
+      ]
+    },
+    "principles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "principle": { "type": "string" },
+          "basis": { "type": "string" }
+        },
+        "required": ["principle", "basis"],
+        "additionalProperties": false
+      }
+    },
+    "medical_facts_to_confirm": {
+      "type": "array",
+      "maxItems": 3,
+      "items": { "type": "string" }
+    },
+    "practical_guidance": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "string" }
+    },
+    "recommend_professional_consultation": { "type": "boolean" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "bioethical_issue", "issue_category", "principles", "medical_facts_to_confirm",
+    "practical_guidance", "recommend_professional_consultation", "scripture_references",
+    "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

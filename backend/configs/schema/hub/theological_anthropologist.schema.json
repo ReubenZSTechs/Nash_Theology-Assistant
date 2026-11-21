@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TheologicalAnthropologistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "anthropology_topic": {
+      "type": "string",
+      "enum": [
+        "image_of_god", "body_and_soul", "fall_and_original_sin", "free_will", "total_depravity",
+        "conscience", "male_and_female", "death"
+      ]
+    },
+    "state_of_man": {
+      "type": "array",
+      "maxItems": 4,
+      "items": { "type": "string", "enum": ["innocence", "sin", "grace", "glory"] }
+    },
+    "distinctions": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": { "type": "string" },
+          "explanation": { "type": "string" }
+        },
+        "required": ["term", "explanation"],
+        "additionalProperties": false
+      }
+    },
+    "errors_to_avoid": {
+      "type": "array",
+      "maxItems": 3,
+      "items": { "type": "string" }
+    },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "anthropology_topic", "state_of_man", "distinctions", "errors_to_avoid",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}

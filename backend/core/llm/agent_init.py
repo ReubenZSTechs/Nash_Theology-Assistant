@@ -29,7 +29,7 @@ CONFIG = {
 
         'embedding': {
             'URL': os.getenv("EMBEDDING_URL", "https://localhost:15001/v1"),
-            'SERVED_MODEl_NAME': "embedding"
+            'SERVED_MODEL_NAME': "embedding"
         },
         
         'translate': {
@@ -49,7 +49,7 @@ CONFIG = {
         'REPETITION_PENALTY': 1.2,
         'REPAIR_JSON_ATTEMPTS': 2,
         'REPAIR_TRUNCATION_ATTEMPTS': 2,
-        'GUIDED_DECODING_BACKEND': "xgrammer"
+        'GUIDED_DECODING_BACKEND': "xgrammar"
     }
 }
 
@@ -70,40 +70,59 @@ class LLMManager:
 
 
 class LLMAgent:
-    def __init__(self, agent_config: str, agent_schema: str):
+    def __init__(self, agent_config: str):
         self.manager = LLMManager()
         self._local_agent = threading.local()
 
         self.agent_config = self.manager.read_config(agent_config)
-        self.agent_schema = self.manager.read_schema(agent_schema)
 
         if not self.agent_config:
             raise ValueError(f"Agent config returned empty content. Check for errors!")
 
-        if not self.agent_schema:
-            raise ValueError(f"Agent schema output returned empty content. Check for errors!")
+        # Agent settings
+        self.agent_id = self.agent_config.get("agent") or {}
 
-        self.agent_id = self.agent_config.get("agent")
-        missing_agent_field = [field for field in REQUIRED_AGENT_KEYS if field not in self.agent_config]
+        missing_agent_field = [field for field in REQUIRED_AGENT_KEYS if field not in self.agent_id]
         if missing_agent_field:
-            raise KeyError(f"Agent ID missing keys {" ".join(missing_agent_field)}")
-
-        self.agent_system_prompt = self.agent_config.get("system_prompt")
-        self.agent_generation_config = self.agent_config.get("generation")
+            raise KeyError(f"Agent ID missing keys {' '.join(missing_agent_field)}")
 
         self.agent_role = self.agent_id['role']
         self.agent_type = self.agent_id['model_type']
 
+
+        # Prompt and Generation settings
+        self.agent_system_prompt = self.agent_config.get("system_prompt")
+        self.agent_generation_config = {**CONFIG['DEFAULT_SETTINGS'], **(self.agent_config.get("generation") or {})}
+
+
+        # Schema settings
+        schema_config = self.agent_config.get("schema") or {}
+        self.schema_enabled = bool(schema_config.get("enabled", False))
+        self.schema_repair_attempts = schema_config.get("repair_attempts", CONFIG['DEFAULT_SETTINGS']['REPAIR_JSON_ATTEMPTS'])
+        self.agent_schema = None
+
+        if self.schema_enabled:
+            schema_path = schema_config.get("path")
+            if not schema_path:
+                raise KeyError(f"Agent with role {self.agent_role} has schema enabled but no 'schema.path'")
+
+            self.agent_schema = self.manager.read_schema(schema_path)
+            if not self.agent_schema:
+                raise ValueError(f"Agent schema '{schema_path}' returned empty content. Check for errors!")
+
+
+        # Model bridging to vLLM
         bridge = CONFIG['MODEL_BRIDGE'].get(self.agent_type)
         if not bridge:
             raise ValueError(f"No vLLM container bridge available for model type {self.agent_type} with role {self.agent_role}")
 
         self.agent_url = bridge['URL']
         self.agent_model = bridge['SERVED_MODEL_NAME']
+        self.model_name = self.agent_model  # read by the logging decorators
 
         self.client = OpenAI(
             base_url=self.agent_url,
-            api_key="not-needed",
+            api_key=os.getenv("VLLM_API_KEY", "not-needed"),
             timeout=self.agent_generation_config.get("timeout", CONFIG['DEFAULT_SETTINGS']['TIMEOUT']),
             max_retries=self.agent_generation_config.get("max_retries", CONFIG['DEFAULT_SETTINGS']['MAX_RETRIES'])
         )
@@ -157,19 +176,30 @@ class LLMAgent:
             'top_p': self.agent_generation_config.get('top_p', CONFIG['DEFAULT_SETTINGS']['TOP_P']),
             'frequency_penalty': self.agent_generation_config.get("frequency_penalty", CONFIG['DEFAULT_SETTINGS']['FREQUENCY_PENALTY']),
             'presence_penalty': self.agent_generation_config.get("presence_penalty", CONFIG['DEFAULT_SETTINGS']['PRESENCE_PENALTY']),
-            'min_p': self.agent_generation_config.get("min_p", CONFIG['DEFAULT_SETTINGS']['MIN_P']),
-            'repetition_penalty': self.agent_generation_config.get("repetition_penalty", CONFIG['DEFAULT_SETTINGS']['REPETITION_PENALTY']),
-            'guided_json': self.agent_schema,
-            'guided_decoding_backend': self.agent_generation_config.get("guided_decoding_backend", CONFIG['DEFAULT_SETTINGS']['GUIDED_DECODING_BACKEND'])
+            # vLLM-only sampling params: the OpenAI SDK rejects unknown kwargs, so they travel in extra_body.
+            # (Structured output is sent through `response_format`; the decoding backend is a vLLM server flag.)
+            'extra_body': {
+                'min_p': self.agent_generation_config.get("min_p", CONFIG['DEFAULT_SETTINGS']['MIN_P']),
+                'repetition_penalty': self.agent_generation_config.get("repetition_penalty", CONFIG['DEFAULT_SETTINGS']['REPETITION_PENALTY']),
+            }
         }
 
         if extra_args:
+            extra_args = dict(extra_args)
+            generation_payload['extra_body'].update(extra_args.pop('extra_body', None) or {})
             generation_payload.update(extra_args)
 
         return generation_payload
 
 
     def format_response_format(self) -> dict[str, Union[str, dict]]:
+        json_schema = {
+            'name': self.agent_role
+        }
+
+        if self.agent_schema:
+            json_schema['schema'] = self.agent_schema
+
         response_format = {
             'type': 'json_schema',
             'json_schema': {
@@ -187,7 +217,7 @@ class LLMAgent:
             "messages": msg_payload,
         }
 
-        if structured:
+        if structured and self.agent_schema:
             response_input = self.format_response_format()
             request_input['response_format'] = response_input
 
@@ -211,9 +241,10 @@ class LLMAgent:
 
 
     @log_process_call
-    def call_llm(self, user_prompt: str, extra_args: Optional[dict]=None, error_throwback_msg: dict=None) -> str:
+    def request_completion(self, user_prompt: str, extra_args: Optional[dict]=None, error_throwback_msg: dict=None, structured: bool=True):
+        """Send one chat completion request and return the full response object (e.g. to read logprobs)."""
         msg_payload = self.format_msg_payload(user_prompt, error_throwback_msg)
-        request_kwargs = self.build_request_kwargs(msg_payload, extra_args)
+        request_kwargs = self.build_request_kwargs(msg_payload, extra_args, structured=structured)
 
         try:
             response = self.client.chat.completions.create(**request_kwargs)
@@ -222,17 +253,23 @@ class LLMAgent:
             error_msg = str(exep)
 
             if "context" in error_msg and ("length" in error_msg or "token" in error_msg):
-                raise SchemaValidationError(f"Agent with role {self.agent_role} exceeded context window tokens (max_tokens = {request_kwargs.get("max_tokens")})") from exep
+                raise SchemaValidationError(f"Agent with role {self.agent_role} exceeded context window tokens (max_tokens = {request_kwargs.get('max_tokens')})") from exep
 
             raise AgentCallError(f"Agent with role {self.agent_role} failed to call LLM (timeout_limit: {self.agent_generation_config.get('timeout')}s). Error got type {type(exep).__name__}. Error details below\n\n{exep}")
 
         
         self.last_usage = response.usage
         self.last_finish_reason = response.choices[0].finish_reason
+
+        return response
+
+
+    def call_llm(self, user_prompt: str, extra_args: Optional[dict]=None, error_throwback_msg: dict=None) -> str:
+        response = self.request_completion(user_prompt, extra_args, error_throwback_msg)
         content = response.choices[0].message.content
 
         if self.last_finish_reason == 'length':
-            logger.warning(f"Role '{self.role}' hit max_tokens; output is truncated")
+            logger.warning(f"Role '{self.agent_role}' hit max_tokens; output is truncated")
 
         return content
 
@@ -248,12 +285,12 @@ class LLMAgent:
         if not isinstance(token_budget, int):
             raise TypeError(f"Agent with role {self.agent_role} is not set to int type. Got {type(token_budget).__name__}")
 
-        while json_attempt <= self.agent_generation_config.get("repair_json_attempts", CONFIG['DEFAULT_SETTINGS']['REPAIR_JSON_ATTEMPATS']):
-            llm_output = self.call_llm(user_prompt, extra_args, error_throwback_msg)
+        while json_attempt <= self.agent_generation_config.get("repair_json_attempts", CONFIG['DEFAULT_SETTINGS']['REPAIR_JSON_ATTEMPTS']):
+            llm_output = self.call_llm(user_prompt, {**(extra_args or {}), 'max_tokens': token_budget}, error_throwback_msg)
 
             # Error: truncated output; insufficient max_tokens
             if self.last_finish_reason == "length":
-                last_error = LLMOutputTruncatedError(f"Output is cut is {len(llm_output)} characters with max_tokens parameter set to {token_budget}")
+                last_error = LLMOutputTruncatedError(f"Output is cut is {len(llm_output)} characters with max_tokens parameter set to {token_budget}", partial_output=llm_output)
 
                 if truncation_attempt >= self.agent_generation_config.get("repair_truncation_attempts", CONFIG['DEFAULT_SETTINGS']['REPAIR_TRUNCATION_ATTEMPTS']):
                     break

@@ -1,0 +1,37 @@
+agent:
+  model_type: llm
+  role: reranker
+
+schema:
+  enabled: false
+  path: ""
+  repair_attempts: 2
+
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  min_p: 0.0
+  repetition_penalty: 1.0   # the digits appear in the system prompt; don't penalise them
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+  max_tokens: 1          # we only need the first token (the digit)
+  top_logprobs: 10       # enough to see all four digits
+  timeout: 30
+  max_retries: 1
+  max_workers: 16        # parallel requests; vLLM batches them on the GPU
+  max_passage_chars: 1500
+
+system_prompt: |
+  You are a search relevance judge for a Reformed theology library (Bible verses, sermons, Westminster Standards).
+  Passages may be in English or Indonesian. Rate how useful the passage is for answering the question:
+  0 = unrelated
+  1 = same general topic, but does not help answer
+  2 = partly answers or gives useful supporting material
+  3 = directly answers the question
+  Reply with a single digit: 0, 1, 2 or 3.
+
+
+# How a score is computed:
+#   1. The LLM must answer with ONE digit 0-3 (vLLM structured output `choice` forces this).
+#   2. We read the probabilities of the four digits from the token logprobs.
+#   3. score = (0*p0 + 1*p1 + 2*p2 + 3*p3) / 3   -> a number between 0 and 1.

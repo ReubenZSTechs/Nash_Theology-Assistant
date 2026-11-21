@@ -23,7 +23,7 @@ backend/
 │       ├── graph_search.py      # 2b. Graph RAG (seeds -> expansion -> bridge)
 │       └── build_context.py     # 3. numbered context blocks + structured sources
 ├── configs/tools/retrieval.py   # the LLM tool (schema + executor + HTTP route)
-├── configs/agent/reranker.yaml  # prompt + settings of the LLM reranker
+├── configs/agent/main/reranker.yaml  # prompt + settings of the LLM reranker
 ├── services/rerank_service.py   # LLM-as-reranker (scores passages 0..1)
 ├── database/neo4j/get_connection.py
 └── utils/rag_configs.py         # all SQL / Cypher queries and tunable numbers
@@ -92,7 +92,7 @@ name `llm`), which saves GPU memory.
 The best `max(RERANK_CANDIDATES, 2 × vector_top_k)` fused candidates are scored. Each one is a separate
 request, and they are all sent in parallel:
 
-1. **Prompt.** The prompt is in `configs/agent/reranker.yaml`. It asks the LLM to rate the passage:
+1. **Prompt.** The prompt is in `configs/agent/main/reranker.yaml`. It asks the LLM to rate the passage:
    0 = unrelated, 1 = same topic but does not help, 2 = partly answers, 3 = directly answers.
 2. **One forced token.** `max_tokens=1` and the vLLM structured output `{"choice": ["0","1","2","3"]}` force
    the answer to be exactly one digit.

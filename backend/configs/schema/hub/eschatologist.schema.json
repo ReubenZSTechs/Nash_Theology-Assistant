@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EschatologistResponse",
+  "type": "object",
+  "properties": {
+    "reasoning": { "type": "string" },
+    "eschatology_topic": {
+      "type": "string",
+      "enum": [
+        "death_and_intermediate_state", "return_of_christ", "resurrection", "final_judgment",
+        "heaven_and_hell", "millennium", "signs_of_the_end", "new_creation"
+      ]
+    },
+    "views_considered": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "properties": {
+          "view": { "type": "string" },
+          "summary": { "type": "string" },
+          "assessment": { "type": "string" }
+        },
+        "required": ["view", "summary", "assessment"],
+        "additionalProperties": false
+      }
+    },
+    "certainty_level": {
+      "type": "string",
+      "enum": ["clearly_taught", "confessionally_settled", "debated_among_reformed"]
+    },
+    "hope_application": { "type": "string" },
+    "scripture_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["reference", "note"],
+        "additionalProperties": false
+      }
+    },
+    "confessional_references": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "string", "enum": ["WCF", "WLC", "WSC"] },
+          "locator": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "required": ["document", "locator", "note"],
+        "additionalProperties": false
+      }
+    },
+    "answer": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+  },
+  "required": [
+    "reasoning", "eschatology_topic", "views_considered", "certainty_level", "hope_application",
+    "scripture_references", "confessional_references", "answer", "confidence"
+  ],
+  "additionalProperties": false
+}
